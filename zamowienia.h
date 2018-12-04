@@ -2,6 +2,7 @@
 #define ZAMOWIENIA_H
 
 #include <QMainWindow>
+#include <QCursor>
 
 namespace Ui {
 class Zamowienia;
@@ -13,10 +14,15 @@ class Zamowienia : public QMainWindow
 
 public:
     explicit Zamowienia(QWidget *parent = nullptr);
-    ~Zamowienia();
+    ~Zamowienia() override;
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
     Ui::Zamowienia *ui;
+    QPoint dragPosition;
 };
 
 #endif // ZAMOWIENIA_H
