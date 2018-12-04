@@ -2,7 +2,7 @@
 #include "ui_zamowienia.h"
 
 Zamowienia::Zamowienia(QWidget *parent) :
-    QMainWindow(parent),
+    QMainWindow(parent, Qt::FramelessWindowHint),
     ui(new Ui::Zamowienia)
 {
     ui->setupUi(this);
