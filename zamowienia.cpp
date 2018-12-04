@@ -8,6 +8,7 @@ Zamowienia::Zamowienia(QWidget *parent) :
     ui(new Ui::Zamowienia)
 {
     ui->setupUi(this);
+    ui->statusBar->showMessage("Baza danych nie jest podłączona!!");
 }
 
 Zamowienia::~Zamowienia()
@@ -30,4 +31,20 @@ void Zamowienia::mousePressEvent(QMouseEvent *event)
         dragPosition = event->globalPos() - frameGeometry().topLeft();
         event->accept();
     }
+}
+
+void Zamowienia::on_connectToSql_clicked()
+{
+    //podłaczenie bazy danych
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("localhost");
+    db.setUserName("root");
+    db.setPassword("");
+    db.setDatabaseName("zabawki");
+
+    if(db.open())
+        ui->statusBar->showMessage("Baza danych podłączona");
+    else
+        ui->statusBar->showMessage("Nie udało się podłączyć bazy danych");
+
 }

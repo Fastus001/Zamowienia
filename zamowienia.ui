@@ -74,6 +74,19 @@ background-color: rgb(229, 229, 229);
      <string>-</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="connectToSql">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Podłącz Bazę SQL</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

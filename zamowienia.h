@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QCursor>
+#include <QtSql/QSql>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 
 namespace Ui {
 class Zamowienia;
@@ -19,6 +22,9 @@ public:
 protected:
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+private slots:
+    void on_connectToSql_clicked();
 
 private:
     Ui::Zamowienia *ui;
