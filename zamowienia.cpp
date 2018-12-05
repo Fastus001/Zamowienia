@@ -7,8 +7,10 @@ Zamowienia::Zamowienia(QWidget *parent) :
     QMainWindow(parent, Qt::FramelessWindowHint),
     ui(new Ui::Zamowienia)
 {
+
     ui->setupUi(this);
     ui->statusBar->showMessage("Baza danych nie jest podłączona!!");
+
 }
 
 Zamowienia::~Zamowienia()
@@ -46,5 +48,19 @@ void Zamowienia::on_connectToSql_clicked()
         ui->statusBar->showMessage("Baza danych podłączona");
     else
         ui->statusBar->showMessage("Nie udało się podłączyć bazy danych");
+    /*
+    QString kod = "748415";
+    QSqlQuery query("SELECT * FROM `towary` WHERE kod = "+kod);
 
+
+    int i = query.size();
+    QString tekst;
+    tekst.setNum(i);
+    QMessageBox::information(this,"Udało się",tekst);
+    */
+}
+
+void Zamowienia::on_exelFilePathButton_clicked()
+{
+    excelFilePath = QFileDialog::getOpenFileName(this,"Wybierz arkusz Excel!","C:/","*.xls *.xlsx");
 }

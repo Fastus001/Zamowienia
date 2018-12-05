@@ -87,6 +87,19 @@ background-color: rgb(229, 229, 229);
      <string>Podłącz Bazę SQL</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="exelFilePathButton">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>60</y>
+      <width>211</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Arkusz Excel z towarami do zamówienia</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

@@ -6,6 +6,10 @@
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QString>
+#include <string.h>
+#include "libxl.h"
+#include <QDialog>
 
 namespace Ui {
 class Zamowienia;
@@ -26,9 +30,12 @@ protected:
 private slots:
     void on_connectToSql_clicked();
 
+    void on_exelFilePathButton_clicked();
+
 private:
     Ui::Zamowienia *ui;
     QPoint dragPosition;
+    QString excelFilePath;
 };
 
 #endif // ZAMOWIENIA_H

@@ -6,6 +6,9 @@
 
 QT       += core gui sql
 
+INCLUDEPATH = F:/Tomek/libxl-3.8.3.0/include_cpp
+DEPENDPATH += F:/Tomek/libxl-3.8.3.0/lib64/libxl.lib
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Zamowienia
@@ -38,3 +41,5 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
