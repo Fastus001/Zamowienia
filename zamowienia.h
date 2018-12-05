@@ -32,6 +32,8 @@ private slots:
 
     void on_exelFilePathButton_clicked();
 
+    void on_searchItemsInSqlButton_clicked();
+
 private:
     Ui::Zamowienia *ui;
     QPoint dragPosition;
