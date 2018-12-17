@@ -29,13 +29,16 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        zamowienia.cpp
+        zamowienia.cpp \
+    zamgenerator.cpp
 
 HEADERS += \
-        zamowienia.h
+        zamowienia.h \
+    zamgenerator.h
 
 FORMS += \
-        zamowienia.ui
+        zamowienia.ui \
+    zamgenerator.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

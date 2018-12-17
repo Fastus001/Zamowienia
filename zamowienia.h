@@ -10,6 +10,9 @@
 #include <string.h>
 #include "libxl.h"
 #include <QDialog>
+#include <QSqlQueryModel>
+#include <QTableView>
+#include <zamgenerator.h>
 
 namespace Ui {
 class Zamowienia;
@@ -34,10 +37,16 @@ private slots:
 
     void on_searchItemsInSqlButton_clicked();
 
+
+    void on_tableView_clicked(const QModelIndex &index);
+
+    void on_makeOrderButton_clicked();
+
 private:
     Ui::Zamowienia *ui;
     QPoint dragPosition;
     QString excelFilePath;
+    QStringList listaDoZamowienia;
 };
 
 #endif // ZAMOWIENIA_H

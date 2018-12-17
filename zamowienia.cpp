@@ -8,10 +8,7 @@ Zamowienia::Zamowienia(QWidget *parent) :
     QMainWindow(parent, Qt::FramelessWindowHint),
     ui(new Ui::Zamowienia)
 {
-
     ui->setupUi(this);
-    ui->statusBar->showMessage("Baza danych nie jest podłączona!!");
-
 }
 
 Zamowienia::~Zamowienia()
@@ -36,6 +33,7 @@ void Zamowienia::mousePressEvent(QMouseEvent *event)
     }
 }
 
+// do usunięcia 2018-12-12 - przeniesione do drugiego okna
 void Zamowienia::on_connectToSql_clicked()
 {
     //podłaczenie bazy danych
@@ -49,16 +47,17 @@ void Zamowienia::on_connectToSql_clicked()
         ui->statusBar->showMessage("Baza danych podłączona");
     else
         ui->statusBar->showMessage("Nie udało się podłączyć bazy danych");
-    /*
+
     QString kod = "748415";
-    QSqlQuery query("SELECT * FROM `towary` WHERE kod = "+kod);
+    QSqlQueryModel *query = new QSqlQueryModel;
+    query->setQuery("SELECT ID,EAN,KOD,zamowienie,opis FROM `towary` WHERE kod = "+kod);
 
 
-    int i = query.size();
-    QString tekst;
-    tekst.setNum(i);
-    QMessageBox::information(this,"Udało się",tekst);
-    */
+
+    ui->tableView->setModel(query);
+
+
+
 }
 
 void Zamowienia::on_exelFilePathButton_clicked()
@@ -97,9 +96,8 @@ void Zamowienia::on_searchItemsInSqlButton_clicked()
                 QString kod;
                 std::string kodString;
                 CellType cellType = sheet->cellType(row, col);
-                while (cellType==CELLTYPE_NUMBER | cellType==CELLTYPE_STRING)
+                while (cellType!=CELLTYPE_EMPTY)
                 {
-
                     switch (cellType)
                       {
                                            case CELLTYPE_EMPTY: break;
@@ -121,15 +119,44 @@ void Zamowienia::on_searchItemsInSqlButton_clicked()
                                            case CELLTYPE_BLANK:break;
                                            case CELLTYPE_ERROR:break;
                       }
-
                    row++;
                    cellType = sheet->cellType(row, col);
                 }
-
             }
 
         }
         book->release();
 
     }
+}
+
+
+
+void Zamowienia::on_tableView_clicked(const QModelIndex &index)
+{
+
+     QString val = ui->tableView->model()->data(index).toString();
+
+     QSqlQuery nQuery("SELECT * FROM `towary` WHERE ID= "+val);
+
+     if(nQuery.exec())
+     {
+         while(nQuery.next())
+         {
+             listaDoZamowienia.clear();
+             ui->listWidget->clear();
+             for(int i=0;i<=9;++i)
+                listaDoZamowienia.append(nQuery.value(i).toString());
+             for(int x = 0; x<=9;++x)
+                ui->listWidget->addItem(listaDoZamowienia.at(x));
+         }
+         //db2.close();
+     }
+}
+
+void Zamowienia::on_makeOrderButton_clicked()
+{
+    zamGenerator zGen;
+    zGen.setModal(false);
+    zGen.exec();
 }
