@@ -8,6 +8,7 @@
 #include <QSqlQueryModel>
 #include <QFileDialog>
 #include <QMessageBox>
+#include "libxl.h"
 
 namespace Ui {
 class zamGenerator;
@@ -25,6 +26,7 @@ private slots:
 
 
     void on_setExceFileToOrder_clicked();
+    void loadOrderListFromExcel();
 
 private:
     Ui::zamGenerator *ui;
