@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1000</width>
     <height>600</height>
    </rect>
   </property>
@@ -16,33 +16,33 @@
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>799</x>
      <y>560</y>
-     <width>80</width>
+     <width>111</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Ok</string>
+    <string>Dodaj do zamówienia</string>
    </property>
   </widget>
   <widget class="QPushButton" name="stopButton">
    <property name="geometry">
     <rect>
-     <x>710</x>
+     <x>910</x>
      <y>560</y>
      <width>80</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Stop</string>
+    <string>Zakończ</string>
    </property>
   </widget>
   <widget class="QPushButton" name="nextButton">
    <property name="geometry">
     <rect>
-     <x>630</x>
+     <x>720</x>
      <y>560</y>
      <width>80</width>
      <height>21</height>
@@ -67,7 +67,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>651</width>
+     <width>981</width>
      <height>301</height>
     </rect>
    </property>
@@ -83,6 +83,52 @@
    </property>
    <property name="text">
     <string>Wybierz plik Excel z zamówieniem</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="backButton">
+   <property name="geometry">
+    <rect>
+     <x>640</x>
+     <y>560</y>
+     <width>80</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cofnij</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineItemNumber">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>330</y>
+     <width>113</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineCtnsOrder">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>360</y>
+     <width>113</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="updateSelectedIdList">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>330</y>
+     <width>101</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Aktualizuj</string>
    </property>
   </widget>
  </widget>

@@ -56,8 +56,6 @@ void Zamowienia::on_connectToSql_clicked()
 
     ui->tableView->setModel(query);
 
-
-
 }
 
 void Zamowienia::on_exelFilePathButton_clicked()
