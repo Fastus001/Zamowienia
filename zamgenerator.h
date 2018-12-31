@@ -42,8 +42,6 @@ private slots:
     //funkcja która w zależności od numeru kolumny przypisuje strina albo do listaDoZamowienia albo do ctnToOrder
     void appendListFunction(QString &s, int a);
 
-    //void on_lineCtnsOrder_textChanged(const QString &arg1);
-
     void on_updateSelectedIdList_clicked();
 
 private:
