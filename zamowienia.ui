@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>487</height>
+    <width>659</width>
+    <height>256</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,78 +72,6 @@ background-color: rgb(229, 229, 229);
     </property>
     <property name="text">
      <string>-</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="connectToSql">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>60</y>
-      <width>131</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Podłącz Bazę SQL</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="exelFilePathButton">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>60</y>
-      <width>211</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Arkusz Excel z towarami do zamówienia</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="searchItemsInSqlButton">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>90</y>
-      <width>211</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Generuj opisy do zamówienia</string>
-    </property>
-   </widget>
-   <widget class="QTableView" name="tableView">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>110</y>
-      <width>571</width>
-      <height>141</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="updateOrderButton">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>410</y>
-      <width>141</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Zapisz do zamówienia</string>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listWidget">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>260</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="makeOrderButton">

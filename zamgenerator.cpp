@@ -13,6 +13,7 @@ zamGenerator::zamGenerator(QWidget *parent) :
     openExcelFileWithOrder();
 
 
+
 }
 
 zamGenerator::~zamGenerator()
@@ -32,17 +33,11 @@ void zamGenerator::openSqlDataBase()
     db.setDatabaseName("zabawki");
 
     if(db.open())
-        ui->infoListWidget->addItem("Baza danych podłączona");
+        ui->infoListWidget->addItem(tr("Baza danych podłączona"));
     else
     {
-        ui->infoListWidget->addItem("Nie udało się podłączyć bazy danych");
+        ui->infoListWidget->addItem(tr("Nie udało się podłączyć bazy danych"));
     }
-    /*
-    QString kod = "748415";
-    QSqlQueryModel *query = new QSqlQueryModel;
-    query->setQuery("SELECT ID,EAN,KOD,zamowienie,opis FROM `towary` WHERE kod = "+kod);
-    ui->tableViewSQL->setModel(query);
-    */
 }
 
 //wybieramy arkusz excel z zamówieniem, jak nie zostanie wybrany żaden plik, to uruchamiamy przycisk do zaczytania
@@ -61,7 +56,14 @@ void zamGenerator::openExcelFileWithOrder()
         ui->infoListWidget->addItem("Plik excel z zamówieniem wybrany!");
         loadOrderListFromExcel();
         //ui->infoListWidget->addItems(listaDoZamowienia);
-        displaySqlQuery(indexOrderList);
+        if(!listaDoZamowienia.isEmpty())
+        {
+            displaySqlQuery(indexOrderList);
+            if(listaDoZamowienia.size()>1)
+                ui->nextButton->setVisible(true);
+            else
+                ui->nextButton->setVisible(false);
+        }
 
     }
 
@@ -103,33 +105,42 @@ void zamGenerator::loadOrderListFromExcel()
                 int row = 15;
                 int col = 1;
                 QString kod;
-                std::string kodString,cartonNumber;
+
+                std::string cartonNumber;
 
                 CellType cellType = sheet->cellType(row, col);
 
-                while (cellType!=CELLTYPE_EMPTY)
+                //while (cellType!=CELLTYPE_EMPTY)
+                do
                 {
                     switch (cellType)
                       {
-                                           case CELLTYPE_EMPTY: break;
-                                           case CELLTYPE_NUMBER:
+                                           case CELLTYPE_EMPTY:break;
+
+                                          case CELLTYPE_NUMBER:
                                            {
                                                double d = sheet->readNum(row, col);
                                                kod.setNum(d,'g',13);
                                                appendListFunction(kod,col);
-                                               //listaDoZamowienia.append(kod);
                                                break;
                                            }
                                            case CELLTYPE_STRING:
                                            {
-                                               kodString = sheet->readStr(row, col);
-                                               QString A = kodString.c_str();
+                                               const char *b = sheet->readStr(row, col);
+                                               QString A(textFile(b));
                                                appendListFunction(A,col);
-                                               //listaDoZamowienia.append(A);
                                                break;
                                            }
                                            case CELLTYPE_BOOLEAN: break;
-                                           case CELLTYPE_BLANK:break;
+                                           case CELLTYPE_BLANK:
+                                            {
+                                            kod = "";
+                                            appendListFunction(kod,col);
+                                            QString text;
+                                            text.setNum(row);
+                                            QMessageBox::information(this,"wiersz",text);
+                                            break;
+                                            }
                                            case CELLTYPE_ERROR:break;
                       }
                     if(col==1)
@@ -140,9 +151,23 @@ void zamGenerator::loadOrderListFromExcel()
                     }
 
                    cellType = sheet->cellType(row, col);
-                }
+                }while(cellType!=CELLTYPE_EMPTY);
             }
-            book->release();
+
+            book->release();            
+            int size_LSD = listaDoZamowienia.size();
+            if (size_LSD>0)
+            {
+                QString size_string;
+                ui->infoListWidget->addItem("Pozycji do zamówienia - "+size_string.setNum(size_LSD));
+            }
+            else
+            {
+                QMessageBox::information(this,"UWAGA!","W arkuszu nie ma żadnej pozycji do zamówienia lub nie zaczyna się od wiersza 16, zaczytaj "
+                                                       "poprawny arkusz z zamówieniem!!");
+                openExcelFileWithOrder();
+            }
+
         }
     }
 }
@@ -151,8 +176,14 @@ void zamGenerator::displaySqlQuery(int i)
 {
         QString kod = listaDoZamowienia.at(i);
         QSqlQueryModel *query = new QSqlQueryModel;
-        ui->lineItemNumber->setText(kod);
-        ui->lineCtnsOrder->setText(ctnToOrder.at(i));
+        if(!listaDoZamowienia.isEmpty())
+            ui->lineItemNumber->setText(kod);
+        if(!ctnToOrder.isEmpty())
+            ui->lineCtnsOrder->setText(ctnToOrder.at(i));
+        if(ctnToOrder.at(i).isEmpty())
+            ui->okButton->setVisible(false);
+        else
+            ui->okButton->setVisible(true);
 
         query->setQuery("SELECT * FROM `towary` WHERE kod = "+kod);
 
@@ -186,12 +217,14 @@ void zamGenerator::on_nextButton_clicked()
 //cofamy do wcześniejszej pozycji
 void zamGenerator::on_backButton_clicked()
 {
-    --indexOrderList;
-    ui->nextButton->setVisible(true);
-    if (indexOrderList==0)
-        ui->backButton->setVisible(false);
-    if(indexOrderList>=0)
-        displaySqlQuery(indexOrderList);
+      --indexOrderList;
+        ui->nextButton->setVisible(true);
+        if (indexOrderList==0)
+            ui->backButton->setVisible(false);
+        if(indexOrderList>=0)
+            displaySqlQuery(indexOrderList);
+
+
 
 
 }
@@ -289,16 +322,6 @@ void zamGenerator::appendListFunction(QString &s, int a)
     else
         ctnToOrder.append(s);
 }
-/*
-void zamGenerator::on_lineCtnsOrder_textChanged(const QString &arg1)
-{
-    selectedIdList.replaceInStrings(selectedIdList.at(0),arg1);
-    ui->infoListWidget->clear();
-    ui->infoListWidget->addItems(selectedIdList);
-
-
-}
-*/
 
 void zamGenerator::on_updateSelectedIdList_clicked()
 {
@@ -310,3 +333,15 @@ void zamGenerator::on_updateSelectedIdList_clicked()
     }
 
 }
+//funkcja do zmiany kodowania znaków, gdy zaczytujemy polskie znaki z arkusza excel
+QString zamGenerator::textFile(const char *x)
+{
+
+    QByteArray encodedString(x);
+    QTextCodec *codec = QTextCodec::codecForName("Windows-1250");
+    QString string = codec->toUnicode(encodedString);
+
+    return string;
+}
+
+

@@ -3,15 +3,10 @@
 
 #include <QMainWindow>
 #include <QCursor>
-#include <QtSql/QSql>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
 #include <QString>
 #include <string.h>
 #include "libxl.h"
 #include <QDialog>
-#include <QSqlQueryModel>
-#include <QTableView>
 #include <zamgenerator.h>
 
 namespace Ui {
@@ -31,15 +26,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
-    void on_connectToSql_clicked();
-
-    void on_exelFilePathButton_clicked();
-
-    void on_searchItemsInSqlButton_clicked();
-
-
-    void on_tableView_clicked(const QModelIndex &index);
-
     void on_makeOrderButton_clicked();
 
 private:

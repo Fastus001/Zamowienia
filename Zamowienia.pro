@@ -30,15 +30,18 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         zamowienia.cpp \
-    zamgenerator.cpp
+    zamgenerator.cpp \
+    import_do_sql.cpp
 
 HEADERS += \
         zamowienia.h \
-    zamgenerator.h
+    zamgenerator.h \
+    import_do_sql.h
 
 FORMS += \
-        zamowienia.ui \
-    zamgenerator.ui
+    zamgenerator.ui \
+    zamowienia.ui \
+    import_do_sql.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

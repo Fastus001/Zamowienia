@@ -9,6 +9,10 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "libxl.h"
+#include <QtDebug>
+#include <QFile>
+#include <QTextCodec>
+
 
 namespace Ui {
 class zamGenerator;
@@ -43,6 +47,8 @@ private slots:
     void appendListFunction(QString &s, int a);
 
     void on_updateSelectedIdList_clicked();
+
+    QString textFile(const char *x);
 
 private:
     Ui::zamGenerator *ui;
