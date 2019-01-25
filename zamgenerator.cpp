@@ -11,9 +11,6 @@ zamGenerator::zamGenerator(QWidget *parent) :
     indexOrderList = 0;
     openSqlDataBase();
     openExcelFileWithOrder();
-
-
-
 }
 
 zamGenerator::~zamGenerator()
@@ -79,7 +76,6 @@ void zamGenerator::on_setExceFileToOrder_clicked()
 
 void zamGenerator::loadOrderListFromExcel()
 {
-    //setlocale(LC_ALL,"");
     if(excelFilePath.isEmpty())
     {
         QMessageBox::information(this, "Brak pliku excel","Nie został wybrany arkusz excel z listą produktów do zamówienia!!");
@@ -102,17 +98,20 @@ void zamGenerator::loadOrderListFromExcel()
 
             if(sheet)
             {
-                int row = 15;
+                int row = 16;
                 int col = 1;
                 QString kod;
-
-                std::string cartonNumber;
 
                 CellType cellType = sheet->cellType(row, col);
 
                 //while (cellType!=CELLTYPE_EMPTY)
                 do
                 {
+                    cellType = sheet->cellType(row, col);
+
+                    //testuje czy arkusz nie zaczyna się od pustego rekordu, jeśli tak to pomija wczytywanie
+                    if(cellType == CELLTYPE_BLANK && col == 1)
+                        break;
                     switch (cellType)
                       {
                                            case CELLTYPE_EMPTY:break;
@@ -138,7 +137,7 @@ void zamGenerator::loadOrderListFromExcel()
                                             appendListFunction(kod,col);
                                             QString text;
                                             text.setNum(row);
-                                            QMessageBox::information(this,"wiersz",text);
+                                            //QMessageBox::information(this,"wiersz",text);
                                             break;
                                             }
                                            case CELLTYPE_ERROR:break;
@@ -150,11 +149,11 @@ void zamGenerator::loadOrderListFromExcel()
                         row++;
                     }
 
-                   cellType = sheet->cellType(row, col);
-                }while(cellType!=CELLTYPE_EMPTY);
-            }
 
-            book->release();            
+                }while(cellType!=CELLTYPE_EMPTY); // poprawić aby kończyło się tylko gdy pusta jest kolumna pierwsza
+            }
+            book->release();
+
             int size_LSD = listaDoZamowienia.size();
             if (size_LSD>0)
             {
@@ -288,7 +287,7 @@ void zamGenerator::uploadToExcelOrder(QStringList sList)
 
             if(sheet)
             {
-                int row = 15+sList.at(10).toInt();
+                int row = 16+sList.at(10).toInt();
                 int col = 0;
                 QByteArray test = sList.at(1).toLocal8Bit();
                 sheet->writeStr(row,col,test.data());

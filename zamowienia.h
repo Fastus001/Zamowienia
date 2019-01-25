@@ -8,6 +8,7 @@
 #include "libxl.h"
 #include <QDialog>
 #include <zamgenerator.h>
+#include <import_do_sql.h>
 
 namespace Ui {
 class Zamowienia;
@@ -27,6 +28,8 @@ protected:
 
 private slots:
     void on_makeOrderButton_clicked();
+
+    void on_import_to_sql_pushButton_clicked();
 
 private:
     Ui::Zamowienia *ui;

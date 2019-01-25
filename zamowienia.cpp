@@ -39,3 +39,10 @@ void Zamowienia::on_makeOrderButton_clicked()
     zGen.setModal(false);
     zGen.exec();
 }
+
+void Zamowienia::on_import_to_sql_pushButton_clicked()
+{
+    import_do_sql importSql;
+    importSql.setModal(false);
+    importSql.exec();
+}

@@ -23,6 +23,7 @@ class zamGenerator : public QDialog
     Q_OBJECT
 
 public:
+
     explicit zamGenerator(QWidget *parent = nullptr);
     ~zamGenerator();
 
@@ -59,6 +60,7 @@ private:
     QString excelFilePath;
     int indexOrderList;
     void openSqlDataBase();
+
     void openExcelFileWithOrder();
 };
 
