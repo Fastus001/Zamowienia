@@ -20,6 +20,8 @@ public:
 private slots:
     void on_excel_order_to_import_clicked();
 
+    void on_upload_to_sql_start_clicked();
+
 private:
     Ui::import_do_sql *ui;
     QSqlDatabase db;
@@ -27,6 +29,7 @@ private:
     QStringList rowFromExcel;
     void openSqlDataBase();
     void dataFromExelFile(); // zaczytanie danych z arkusza excel
+    void insert_into_sql_DB(int a);  //wstawianie nowego rekordu do BD
     QString textFile(const char *x);
     void readSheet(int x);
     int rowNumberInExcel();

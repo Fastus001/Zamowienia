@@ -197,8 +197,6 @@ void zamGenerator::displaySqlQuery(int i)
         ui->tableViewSQL->setColumnWidth(8,220);
         ui->tableViewSQL->setColumnWidth(9,220);
         ui->tableViewSQL->setColumnWidth(10,220);
-
-
 }
 //pomijamy konkretny rekord
 void zamGenerator::on_nextButton_clicked()
