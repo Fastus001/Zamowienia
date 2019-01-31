@@ -30,6 +30,9 @@ private:
     void openSqlDataBase();
     void dataFromExelFile(); // zaczytanie danych z arkusza excel
     void insert_into_sql_DB(int a);  //wstawianie nowego rekordu do BD
+    bool check_DB_for_same_item(int a);
+    //zaczytywanie z excela tylko szybsze, aby nie otwierać i zamykać po każdym rekordzie
+    void read_from_excel_fast(int number_of_rows,int start, QString file_name);
     QString textFile(const char *x);
     void readSheet(int x);
     int rowNumberInExcel();
