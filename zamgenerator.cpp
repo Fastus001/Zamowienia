@@ -309,6 +309,8 @@ void zamGenerator::uploadToExcelOrder(QStringList sList)
         }
         book->release();
         }
+        ui->infoListWidget->clear();
+        ui->infoListWidget->addItem(sList.at(2)+" zapisane do zamówienia.");
 }
 
 void zamGenerator::appendListFunction(QString &s, int a)

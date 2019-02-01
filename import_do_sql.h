@@ -22,6 +22,8 @@ private slots:
 
     void on_upload_to_sql_start_clicked();
 
+    void on_add_ID_in_excel_file_clicked();
+
 private:
     Ui::import_do_sql *ui;
     QSqlDatabase db;
@@ -33,9 +35,12 @@ private:
     bool check_DB_for_same_item(int a);
     //zaczytywanie z excela tylko szybsze, aby nie otwierać i zamykać po każdym rekordzie
     void read_from_excel_fast(int number_of_rows,int start, QString file_name);
+    void read_from_excel_fast_to_add_ID(int number_of_rows,int start);
+    void add_Id_from_DB();
     QString textFile(const char *x);
     void readSheet(int x);
     int rowNumberInExcel();
+    QString file_name(QString fn);
 };
 
 #endif // IMPORT_DO_SQL_H

@@ -6,6 +6,7 @@ import_do_sql::import_do_sql(QWidget *parent) :
     ui(new Ui::import_do_sql)
 {
     ui->setupUi(this);
+    ui->add_ID_in_excel_file->setVisible(false);
 }
 
 import_do_sql::~import_do_sql()
@@ -105,7 +106,7 @@ void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString 
     int row = 16;
     int col = 0;
     int k = 0;
-    int dist = 40; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
+    int dist = 35; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
     Book* book;
     if(excelFilePath.contains(".xlsx"))
     {
@@ -160,6 +161,89 @@ void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString 
         }
     }
 }
+
+void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start)
+{
+    using namespace libxl;
+    QString kod;
+    QByteArray ba = excelFilePath.toUtf8();
+    int row = 16;
+    int col = 1;
+    int k = 0;
+    int dist = 50; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
+    Book* book;
+    if(excelFilePath.contains(".xlsx"))
+    {
+        book = xlCreateXMLBook();
+    }else{
+        book = xlCreateBookA();
+    }
+    if(book->load(ba.data()))
+    {
+        Sheet *sheet = book->getSheet(0);
+        if(sheet)
+        {
+            for(k=0;k<dist;++k)
+            {
+               if(k+start>=number_of_rows)
+                   break;
+                CellType cellType;
+
+                cellType = sheet->cellType(row+k+start, col);
+                    switch (cellType)
+                      {
+                         case CELLTYPE_EMPTY:break;
+                         case CELLTYPE_NUMBER:
+                                           {
+                                               double d = sheet->readNum(row+k+start, col);
+                                               kod.setNum(d,'g',13);
+                                               rowFromExcel.append(kod);
+                                               break;
+                                           }
+                         case CELLTYPE_STRING:
+                                           {
+                                               const char *b = sheet->readStr(row+k+start, col);
+                                               QString A(textFile(b));
+                                               rowFromExcel.append(A);
+                                               break;
+                                           }
+                         case CELLTYPE_BOOLEAN: break;
+                         case CELLTYPE_BLANK: break;
+                         case CELLTYPE_ERROR:break;
+                      }
+            }
+
+        }
+        book->release();
+        if(start<=number_of_rows)
+            return read_from_excel_fast_to_add_ID(number_of_rows,start+dist);
+    }
+}
+
+void import_do_sql::add_Id_from_DB()
+{
+    QString fn(file_name(excelFilePath));
+    QStringList result;
+    for (int i = 0;i<rowFromExcel.size();++i)
+    {
+       QString zapytanie("SELECT ID FROM towary where kod = '"+rowFromExcel.at(i)+"' and orderDate = '"+fn+"'");
+       QSqlQuery query(zapytanie);
+       QString q;
+       if(query.size()>0)
+       {
+            result.append(rowFromExcel.at(i));
+            while(query.next())
+            {
+               q= query.value(0).toString();
+            }
+            result.append(q);
+       }
+
+    }
+    ui->listWidget->clear();
+    ui->listWidget->addItems(result);
+
+}
 //zaczytywanie polski znaków !!
 QString import_do_sql::textFile(const char *x)
 {
@@ -173,14 +257,8 @@ QString import_do_sql::textFile(const char *x)
 void import_do_sql::readSheet(int x)
 {
     rowFromExcel.clear();
-    QDir dir(excelFilePath);
-    QString test = dir.dirName();
-    //usunięcie rozszerzenia z nazwy pliku
-    int a = test.indexOf(".xls");
-    test.truncate(a);
-    read_from_excel_fast(x,0,test);
-
-ui->listWidget->addItems(rowFromExcel); //wgranie do widgetu całej listy, później juz nie będzie potrzebne
+    read_from_excel_fast(x,0,file_name(excelFilePath));
+    ui->listWidget->addItems(rowFromExcel); //wgranie do widgetu całej listy, później juz nie będzie potrzebne
 
 }
 
@@ -226,6 +304,16 @@ int import_do_sql::rowNumberInExcel()
         return size;
 }
 
+QString import_do_sql::file_name(QString fn)
+{
+    QDir dir(fn);
+    QString test = dir.dirName();
+    //usunięcie rozszerzenia z nazwy pliku
+    int a = test.indexOf(".xls");
+    test.truncate(a);
+    return test;
+}
+
 void import_do_sql::on_excel_order_to_import_clicked()
 {
     excelFilePath = QFileDialog::getOpenFileName(this,"Wybierz arkusz Excel z listą towarów do zamówienia, "
@@ -251,4 +339,15 @@ void import_do_sql::on_upload_to_sql_start_clicked()
             }
         }
     }
+    ui->add_ID_in_excel_file->setVisible(true);
+}
+
+void import_do_sql::on_add_ID_in_excel_file_clicked()
+{
+    rowFromExcel.clear(); // czyścimy listę z wcześnijszych danych
+    read_from_excel_fast_to_add_ID(rowNumberInExcel(),0);
+    ui->listWidget->clear();
+    ui->listWidget->addItems(rowFromExcel);
+    add_Id_from_DB();
+
 }
