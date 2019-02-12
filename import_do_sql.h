@@ -37,7 +37,9 @@ private:
     void read_from_excel_fast(int number_of_rows,int start, QString file_name);
     void read_from_excel_fast_to_add_ID(int number_of_rows,int start);
     void add_Id_from_DB();
+    void write_Id_to_excel(QStringList & sList);
     QString textFile(const char *x);
+    QString read_from_excel_switch(libxl::Sheet *sh, libxl::CellType ct,int r,int c);
     void readSheet(int x);
     int rowNumberInExcel();
     QString file_name(QString fn);

@@ -84,18 +84,11 @@ bool import_do_sql::check_DB_for_same_item(int a)
     int x = a*10;
     QString zapytanie("SELECT * FROM towary where kod = '"+rowFromExcel.at(x+1)+"' and orderDate = '"+rowFromExcel.at(x+9)+"'");
     QSqlQuery query(zapytanie);
-    /*int as = query.size();
-    QString As;
-    As.setNum(as);
-    ui->listWidget->addItem(As);
-    ui->listWidget->addItem(zapytanie);*/
 
     if(query.size()>0)
         return true;
     else
         return false;
-
-
 }
 
 void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString file_name)
@@ -219,7 +212,7 @@ void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start
             return read_from_excel_fast_to_add_ID(number_of_rows,start+dist);
     }
 }
-
+//pobranie ID z BD do konkretnego numeru i zamówienia
 void import_do_sql::add_Id_from_DB()
 {
     QString fn(file_name(excelFilePath));
@@ -242,9 +235,51 @@ void import_do_sql::add_Id_from_DB()
     }
     ui->listWidget->clear();
     ui->listWidget->addItems(result);
+    write_Id_to_excel(result);
 
 }
-//zaczytywanie polski znaków !!
+//zapisanie w arkuszu z zamówienie ID towaru z bazy danych, nie zapisze na raz wiecej niż 300 id ze względu na demo LIBXL
+void import_do_sql::write_Id_to_excel(QStringList &sList)
+{
+    using namespace libxl;
+    int row = 16;
+    int col = 1;
+    QString testString;
+    QByteArray test;
+    Book* book;
+    if(excelFilePath.contains(".xlsx"))
+    {
+        book = xlCreateXMLBook();
+    }else{
+         book = xlCreateBookA();
+    }
+    QByteArray ba = excelFilePath.toUtf8();
+    if(book->load(ba.data()))
+    {
+        Sheet *sheet = book->getSheet(0);
+        CellType cellType;
+
+        if(sheet)
+        {
+            for(int i = 0; i<sList.size();i+=2)
+            {
+                    int x = i/2;
+                    cellType = sheet->cellType(row+x, col);
+                    testString = read_from_excel_switch(sheet,cellType,row+x,col);
+                    if(testString==sList.at(i))
+                    {
+                        test = sList.at(i+1).toLocal8Bit();
+                        sheet->writeStr(row+x,col+18,test.data());
+                    }
+            }
+            book->save(ba.data());
+        }
+    book->release();
+    }
+}
+
+
+//zaczytywanie polskich znaków !!
 QString import_do_sql::textFile(const char *x)
 {
     QByteArray encodedString(x);
@@ -252,6 +287,32 @@ QString import_do_sql::textFile(const char *x)
     QString string = codec->toUnicode(encodedString);
 
     return string;
+}
+//zwrot wartości z określonego pola z arkusza excel, switch
+QString import_do_sql::read_from_excel_switch(libxl::Sheet *sh, libxl::CellType ct, int r, int c)
+{
+    using namespace libxl;
+    QString text;
+    switch (ct)
+      {
+         case CELLTYPE_EMPTY:break;
+         case CELLTYPE_NUMBER:
+                           {
+                               double d = sh->readNum(r, c);
+                               text.setNum(d,'g',13);
+                               return text;
+                           }
+         case CELLTYPE_STRING:
+                           {
+                               const char *b = sh->readStr(r, c);
+                               QString A(textFile(b));
+                               return A;
+                           }
+         case CELLTYPE_BOOLEAN: break;
+         case CELLTYPE_BLANK: break;
+         case CELLTYPE_ERROR:break;
+      }
+    return text;
 }
 
 void import_do_sql::readSheet(int x)
