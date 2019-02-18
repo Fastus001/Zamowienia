@@ -33,7 +33,7 @@ void import_do_sql::openSqlDataBase()
     }
 }
 
-void import_do_sql::dataFromExelFile()
+void import_do_sql::dataFromExelFile(int b)
 {
     if(excelFilePath.isEmpty())
     {
@@ -52,16 +52,16 @@ void import_do_sql::dataFromExelFile()
         ui->listWidget->addItem(file_name);
 
         //zaczytać te wiersze, wiedząc ile mamy wierszy
-        readSheet(number_of_row);
+        readSheet(number_of_row,b);
     }
 }
 
 void import_do_sql::insert_into_sql_DB(int a)
 {
-    int x = a*10;
     QSqlQuery query;
+    int x = a*10;
     query.prepare("INSERT INTO towary (EAN, kod, cena, pakowanie, volumen, zamowienie, opis, uwagi, etykiety, orderDate) "
-                  "VALUES (:EAN,:kod,:cena, :pakowanie, :volumen, :zamowienie, :opis, :uwagi, :etykiety, :orderDate)");
+                      "VALUES (:EAN,:kod,:cena, :pakowanie, :volumen, :zamowienie, :opis, :uwagi, :etykiety, :orderDate)");
     query.bindValue(":EAN",rowFromExcel.at(x));
     query.bindValue(":kod",rowFromExcel.at(x+1));
     query.bindValue(":cena",rowFromExcel.at(x+2));
@@ -74,6 +74,21 @@ void import_do_sql::insert_into_sql_DB(int a)
     query.bindValue(":orderDate",rowFromExcel.at(x+9));
     if(query.exec())
         ui->listWidget->addItem("Produkt "+rowFromExcel.at(x+1)+" udało się wgrać do bazy danych");
+    else {
+        ui->listWidget->addItem("nie udało się wstawić do BD towaru o numerze "+rowFromExcel.at(x+1));
+    }
+}
+//uaktualnienie rekordów w całym zamówieniu, nie jest sprawdzane czy coś rzeczywiście się zmieniło a tylko czy jest towar o takim ID
+void import_do_sql::update_sql_DB_record(int a)
+{
+    QSqlQuery query;
+    int x = a*11;
+
+    query.prepare(set_query_string(a));
+    //ui->listWidget->addItem(set_query_string(a));
+
+    if(query.exec())
+        ui->listWidget->addItem("Produkt "+rowFromExcel.at(x+1)+" udało się uaktualnić do bazy danych");
     else {
         ui->listWidget->addItem("nie udało się wstawić do BD towaru o numerze "+rowFromExcel.at(x+1));
     }
@@ -91,9 +106,24 @@ bool import_do_sql::check_DB_for_same_item(int a)
         return false;
 }
 
-void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString file_name)
+bool import_do_sql::check_DB_for_same_item_by_ID(int a)
+{
+    int x = a*11;
+    QString zapytanie("SELECT * FROM towary where ID = "+rowFromExcel.at(x+9));
+    QSqlQuery query(zapytanie);
+
+
+    if(query.size()>0)
+        return true;
+    else
+        return false;
+}
+
+
+void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString file_name, int ex_col)
 {
     using namespace libxl;
+
     QString kod;
     QByteArray ba = excelFilePath.toUtf8();
     int row = 16;
@@ -101,12 +131,7 @@ void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString 
     int k = 0;
     int dist = 35; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
     Book* book;
-    if(excelFilePath.contains(".xlsx"))
-    {
-        book = xlCreateXMLBook();
-    }else{
-        book = xlCreateBookA();
-    }
+    book = open_Book(excelFilePath);
     if(book->load(ba.data()))
     {
         Sheet *sheet = book->getSheet(0);
@@ -120,37 +145,18 @@ void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString 
                 for (int var = 0; var < 9; ++var)
                 {
                     cellType = sheet->cellType(row+k+start, col+var);
-                    switch (cellType)
-                      {
-                                          case CELLTYPE_EMPTY:break;
-                                          case CELLTYPE_NUMBER:
-                                           {
-                                               double d = sheet->readNum(row+k+start, col+var);
-                                               kod.setNum(d,'g',13);
-                                               rowFromExcel.append(kod);
-                                               break;
-                                           }
-                                           case CELLTYPE_STRING:
-                                           {
-                                               const char *b = sheet->readStr(row+k+start, col+var);
-                                               QString A(textFile(b));
-                                               rowFromExcel.append(A);
-                                               break;
-                                           }
-                                           case CELLTYPE_BOOLEAN: break;
-                                           case CELLTYPE_BLANK:
-                                           {
-                                            rowFromExcel.append("NULL");
-                                            break;
-                                           }
-                                           case CELLTYPE_ERROR:break;
-                      }
+                    rowFromExcel.append(read_from_excel_switch(sheet, cellType,row+k+start,col+var));
+                }
+                if(ex_col>0)
+                {
+                    cellType = sheet->cellType(row+k+start, col+ex_col);
+                    rowFromExcel.append(read_from_excel_switch(sheet, cellType,row+k+start,col+ex_col));
                 }
                 rowFromExcel.append(file_name);
             }
             book->release();
             if(start<number_of_rows)
-                return read_from_excel_fast(number_of_rows,start+dist,file_name);
+                return read_from_excel_fast(number_of_rows,start+dist,file_name,ex_col);
         }
     }
 }
@@ -165,12 +171,7 @@ void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start
     int k = 0;
     int dist = 50; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
     Book* book;
-    if(excelFilePath.contains(".xlsx"))
-    {
-        book = xlCreateXMLBook();
-    }else{
-        book = xlCreateBookA();
-    }
+    book = open_Book(excelFilePath);
     if(book->load(ba.data()))
     {
         Sheet *sheet = book->getSheet(0);
@@ -183,27 +184,7 @@ void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start
                 CellType cellType;
 
                 cellType = sheet->cellType(row+k+start, col);
-                    switch (cellType)
-                      {
-                         case CELLTYPE_EMPTY:break;
-                         case CELLTYPE_NUMBER:
-                                           {
-                                               double d = sheet->readNum(row+k+start, col);
-                                               kod.setNum(d,'g',13);
-                                               rowFromExcel.append(kod);
-                                               break;
-                                           }
-                         case CELLTYPE_STRING:
-                                           {
-                                               const char *b = sheet->readStr(row+k+start, col);
-                                               QString A(textFile(b));
-                                               rowFromExcel.append(A);
-                                               break;
-                                           }
-                         case CELLTYPE_BOOLEAN: break;
-                         case CELLTYPE_BLANK: break;
-                         case CELLTYPE_ERROR:break;
-                      }
+                rowFromExcel.append(read_from_excel_switch(sheet, cellType,row+k+start,col));
             }
 
         }
@@ -247,12 +228,8 @@ void import_do_sql::write_Id_to_excel(QStringList &sList)
     QString testString;
     QByteArray test;
     Book* book;
-    if(excelFilePath.contains(".xlsx"))
-    {
-        book = xlCreateXMLBook();
-    }else{
-         book = xlCreateBookA();
-    }
+    book = open_Book(excelFilePath);
+
     QByteArray ba = excelFilePath.toUtf8();
     if(book->load(ba.data()))
     {
@@ -269,7 +246,7 @@ void import_do_sql::write_Id_to_excel(QStringList &sList)
                     if(testString==sList.at(i))
                     {
                         test = sList.at(i+1).toLocal8Bit();
-                        sheet->writeStr(row+x,col+18,test.data());
+                        sheet->writeStr(row+x,col+17,test.data());
                     }
             }
             book->save(ba.data());
@@ -309,18 +286,21 @@ QString import_do_sql::read_from_excel_switch(libxl::Sheet *sh, libxl::CellType 
                                return A;
                            }
          case CELLTYPE_BOOLEAN: break;
-         case CELLTYPE_BLANK: break;
+         case CELLTYPE_BLANK:
+                           {
+                            text = "NULL";
+                            return text;
+                           }
          case CELLTYPE_ERROR:break;
       }
     return text;
 }
 
-void import_do_sql::readSheet(int x)
+void import_do_sql::readSheet(int x, int b)
 {
     rowFromExcel.clear();
-    read_from_excel_fast(x,0,file_name(excelFilePath));
+    read_from_excel_fast(x,0,file_name(excelFilePath),b);
     ui->listWidget->addItems(rowFromExcel); //wgranie do widgetu całej listy, później juz nie będzie potrzebne
-
 }
 
 //funkcja zliczające liczbę wierszy do zaczytania w arkusze excel, potrzebne bo operujemy na wersji demo biblioteki libslx
@@ -331,12 +311,7 @@ int import_do_sql::rowNumberInExcel()
     int row = 16;
     int col = 1; //kolumna z kodami towarowymi
     Book* book;
-        if(excelFilePath.contains(".xlsx"))
-        {
-            book = xlCreateXMLBook();
-        }else{
-            book = xlCreateBookA();
-        }
+    book = open_Book(excelFilePath);
 
         QByteArray ba = excelFilePath.toUtf8();
         if(book->load(ba.data()))
@@ -375,11 +350,44 @@ QString import_do_sql::file_name(QString fn)
     return test;
 }
 
-void import_do_sql::on_excel_order_to_import_clicked()
+libxl::Book *import_do_sql::open_Book(QString qs)
+{
+    if(qs.contains(".xlsx"))
+    {
+        return xlCreateXMLBook();
+    }else{
+        return xlCreateBookA();
+    }
+}
+
+void import_do_sql::get_file_address()
 {
     excelFilePath = QFileDialog::getOpenFileName(this,"Wybierz arkusz Excel z listą towarów do zamówienia, "
                                                       "pamiętaj aby nie było polskich znaków po drodze!!!!",
                                                  "C:/","*.xls *.xlsx");
+}
+
+QString import_do_sql::set_query_string(int a)
+{
+    int x = a*11;
+
+    QString query = "UPDATE towary SET EAN = '"+rowFromExcel.at(x)+"',kod = '"+rowFromExcel.at(x+1);
+    query += "', cena = "+rowFromExcel.at(x+2);
+    query += ", pakowanie = "+rowFromExcel.at(x+3);
+    query += ", volumen = "+rowFromExcel.at(x+4);
+    query += ", zamowienie = '"+rowFromExcel.at(x+5);
+    query += "', opis = '"+rowFromExcel.at(x+6);
+    query += "', uwagi = '"+rowFromExcel.at(x+7);
+    query += "', etykiety = '"+rowFromExcel.at(x+8);
+    query += "', orderDate = '"+rowFromExcel.at(x+10);
+    query += "' WHERE ID = "+rowFromExcel.at(x+9);
+    return query;
+
+}
+
+void import_do_sql::on_excel_order_to_import_clicked()
+{
+    get_file_address();
     dataFromExelFile();
 }
 //funkcja sprawdza czy dany produkt jest już w BD (kod produktu+numer zamówienia), jeżeli nie ma to dodaje do BD
@@ -410,5 +418,36 @@ void import_do_sql::on_add_ID_in_excel_file_clicked()
     ui->listWidget->clear();
     ui->listWidget->addItems(rowFromExcel);
     add_Id_from_DB();
+
+}
+
+void import_do_sql::on_update_BD_button_clicked()
+{
+    get_file_address();
+    dataFromExelFile(18);
+    //sprawdzienie czy nie ma pustego rekordu w kolumnie z ID
+
+
+    if(!db.open())
+        openSqlDataBase();
+    int size = rowFromExcel.size();
+    QString rozmiar;
+    rozmiar.setNum(size);
+    ui->listWidget->addItem(rozmiar);
+    if(!rowFromExcel.isEmpty())
+    {
+        for (int i=0;i<size/11;++i)
+        {
+            if(check_DB_for_same_item_by_ID(i))
+            {
+                //ui->listWidget->addItem("Produkt "+rowFromExcel.at((i*11)+1)+ " jest już w DB");
+                update_sql_DB_record(i);
+            }
+            else {
+
+            }
+        }
+    }
+    //sprawdz ilość danych zaczytach!!!!
 
 }
