@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <zamgenerator.h>
 #include <QDir>
+#include <string>
 
 namespace Ui {
 class import_do_sql;
@@ -50,6 +51,7 @@ private:
     libxl::Book* open_Book(QString qs);
     void get_file_address();
     QString set_query_string(int a);
+    bool check_id_in_excel();
 };
 
 #endif // IMPORT_DO_SQL_H

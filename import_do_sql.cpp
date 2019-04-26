@@ -2,7 +2,7 @@
 #include "ui_import_do_sql.h"
 
 import_do_sql::import_do_sql(QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::FramelessWindowHint),
     ui(new Ui::import_do_sql)
 {
     ui->setupUi(this);
@@ -88,7 +88,7 @@ void import_do_sql::update_sql_DB_record(int a)
     //ui->listWidget->addItem(set_query_string(a));
 
     if(query.exec())
-        ui->listWidget->addItem("Produkt "+rowFromExcel.at(x+1)+" udało się uaktualnić do bazy danych");
+        ui->listWidget->addItem("Produkt "+rowFromExcel.at(x+1)+" uaktualniony w BD");
     else {
         ui->listWidget->addItem("nie udało się wstawić do BD towaru o numerze "+rowFromExcel.at(x+1));
     }
@@ -112,24 +112,22 @@ bool import_do_sql::check_DB_for_same_item_by_ID(int a)
     QString zapytanie("SELECT * FROM towary where ID = "+rowFromExcel.at(x+9));
     QSqlQuery query(zapytanie);
 
-
     if(query.size()>0)
         return true;
     else
         return false;
 }
 
-
 void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString file_name, int ex_col)
 {
     using namespace libxl;
-
     QString kod;
     QByteArray ba = excelFilePath.toUtf8();
+
     int row = 16;
     int col = 0;
     int k = 0;
-    int dist = 35; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
+    int dist = 30; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
     Book* book;
     book = open_Book(excelFilePath);
     if(book->load(ba.data()))
@@ -159,6 +157,7 @@ void import_do_sql::read_from_excel_fast(int number_of_rows, int start, QString 
                 return read_from_excel_fast(number_of_rows,start+dist,file_name,ex_col);
         }
     }
+
 }
 
 void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start)
@@ -166,10 +165,12 @@ void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start
     using namespace libxl;
     QString kod;
     QByteArray ba = excelFilePath.toUtf8();
+
+
     int row = 16;
     int col = 1;
     int k = 0;
-    int dist = 50; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
+    int dist = 40; //liczba rekordów zaczytywanych w jednym cyklu (ograniczone przez libslx)
     Book* book;
     book = open_Book(excelFilePath);
     if(book->load(ba.data()))
@@ -192,6 +193,7 @@ void import_do_sql::read_from_excel_fast_to_add_ID(int number_of_rows, int start
         if(start<=number_of_rows)
             return read_from_excel_fast_to_add_ID(number_of_rows,start+dist);
     }
+
 }
 //pobranie ID z BD do konkretnego numeru i zamówienia
 void import_do_sql::add_Id_from_DB()
@@ -212,12 +214,10 @@ void import_do_sql::add_Id_from_DB()
             }
             result.append(q);
        }
-
     }
     ui->listWidget->clear();
     ui->listWidget->addItems(result);
     write_Id_to_excel(result);
-
 }
 //zapisanie w arkuszu z zamówienie ID towaru z bazy danych, nie zapisze na raz wiecej niż 300 id ze względu na demo LIBXL
 void import_do_sql::write_Id_to_excel(QStringList &sList)
@@ -226,10 +226,10 @@ void import_do_sql::write_Id_to_excel(QStringList &sList)
     int row = 16;
     int col = 1;
     QString testString;
-    QByteArray test;
+
     Book* book;
     book = open_Book(excelFilePath);
-
+    QByteArray test;
     QByteArray ba = excelFilePath.toUtf8();
     if(book->load(ba.data()))
     {
@@ -247,12 +247,14 @@ void import_do_sql::write_Id_to_excel(QStringList &sList)
                     {
                         test = sList.at(i+1).toLocal8Bit();
                         sheet->writeStr(row+x,col+17,test.data());
+
                     }
             }
             book->save(ba.data());
         }
     book->release();
     }
+
 }
 
 
@@ -262,7 +264,6 @@ QString import_do_sql::textFile(const char *x)
     QByteArray encodedString(x);
     QTextCodec *codec = QTextCodec::codecForName("Windows-1250");
     QString string = codec->toUnicode(encodedString);
-
     return string;
 }
 //zwrot wartości z określonego pola z arkusza excel, switch
@@ -313,10 +314,12 @@ int import_do_sql::rowNumberInExcel()
     Book* book;
     book = open_Book(excelFilePath);
 
+
+
         QByteArray ba = excelFilePath.toUtf8();
         if(book->load(ba.data()))
         {
-            Sheet *sheet = book->getSheet(0);
+           Sheet *sheet = book->getSheet(0);
             if(sheet)
             {
                 CellType cellType = sheet->cellType(row, col);
@@ -338,6 +341,7 @@ int import_do_sql::rowNumberInExcel()
             }
         }
         return size;
+
 }
 
 QString import_do_sql::file_name(QString fn)
@@ -356,7 +360,7 @@ libxl::Book *import_do_sql::open_Book(QString qs)
     {
         return xlCreateXMLBook();
     }else{
-        return xlCreateBookA();
+        return xlCreateBook();
     }
 }
 
@@ -382,7 +386,16 @@ QString import_do_sql::set_query_string(int a)
     query += "', orderDate = '"+rowFromExcel.at(x+10);
     query += "' WHERE ID = "+rowFromExcel.at(x+9);
     return query;
+}
 
+bool import_do_sql::check_id_in_excel()
+{
+    for (int i = 0; i<rowFromExcel.size();i+=11)
+    {
+            if(rowFromExcel.at(i+9)=="NULL")
+               return false;
+    }
+    return true;
 }
 
 void import_do_sql::on_excel_order_to_import_clicked()
@@ -416,38 +429,38 @@ void import_do_sql::on_add_ID_in_excel_file_clicked()
     rowFromExcel.clear(); // czyścimy listę z wcześnijszych danych
     read_from_excel_fast_to_add_ID(rowNumberInExcel(),0);
     ui->listWidget->clear();
-    ui->listWidget->addItems(rowFromExcel);
+    //ui->listWidget->addItems(rowFromExcel);
     add_Id_from_DB();
-
 }
 
 void import_do_sql::on_update_BD_button_clicked()
 {
     get_file_address();
     dataFromExelFile(18);
-    //sprawdzienie czy nie ma pustego rekordu w kolumnie z ID
 
-
-    if(!db.open())
-        openSqlDataBase();
-    int size = rowFromExcel.size();
-    QString rozmiar;
-    rozmiar.setNum(size);
-    ui->listWidget->addItem(rozmiar);
-    if(!rowFromExcel.isEmpty())
+    if(check_id_in_excel())
     {
-        for (int i=0;i<size/11;++i)
+        if(!db.open())
+            openSqlDataBase();
+        int size = rowFromExcel.size();
+        QString rozmiar;
+        rozmiar.setNum(size);
+        ui->listWidget->addItem(rozmiar);
+        if(!rowFromExcel.isEmpty())
         {
-            if(check_DB_for_same_item_by_ID(i))
+            for (int i=0;i<size/11;++i)
             {
-                //ui->listWidget->addItem("Produkt "+rowFromExcel.at((i*11)+1)+ " jest już w DB");
-                update_sql_DB_record(i);
-            }
-            else {
-
+                if(check_DB_for_same_item_by_ID(i))
+                {
+                    update_sql_DB_record(i);
+                }
+                else {
+                    QMessageBox::information(this, "Mamy problem", "Nie ma w bazie danych towaru o ID = "+rowFromExcel.at((i*11)+9));
+                    ui->listWidget->addItem(rowFromExcel.at((i*11)+1)+" Nie udało się uaktualnić!!!");
+                }
             }
         }
+    }else {
+    QMessageBox::information(this, "Brak ID!!", "Brak numeru ID w jakieś pozycji w arkuszu excel!");
     }
-    //sprawdz ilość danych zaczytach!!!!
-
 }

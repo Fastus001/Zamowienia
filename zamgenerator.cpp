@@ -47,6 +47,8 @@ void zamGenerator::openExcelFileWithOrder()
     {
         ui->infoListWidget->addItem("Nie został wybrany plik excel z zamówieniem!!!");
         ui->setExceFileToOrder->setVisible(true);
+        ui->backButton->setVisible(false);
+        ui->nextButton->setVisible(false);
     }
     else
     {
@@ -61,11 +63,8 @@ void zamGenerator::openExcelFileWithOrder()
             else
                 ui->nextButton->setVisible(false);
         }
-
     }
-
 }
-
 
 void zamGenerator::on_setExceFileToOrder_clicked()
 {
@@ -80,7 +79,6 @@ void zamGenerator::loadOrderListFromExcel()
     {
         QMessageBox::information(this, "Brak pliku excel","Nie został wybrany arkusz excel z listą produktów do zamówienia!!");
     }else{
-
         using namespace libxl;
         Book* book;
         if(excelFilePath.contains(".xlsx"))
@@ -88,7 +86,6 @@ void zamGenerator::loadOrderListFromExcel()
             book = xlCreateXMLBook();
         }else{
             book = xlCreateBookA();
-
         }
 
         QByteArray ba = excelFilePath.toUtf8();
@@ -104,18 +101,15 @@ void zamGenerator::loadOrderListFromExcel()
 
                 CellType cellType = sheet->cellType(row, col);
 
-                //while (cellType!=CELLTYPE_EMPTY)
                 do
                 {
                     cellType = sheet->cellType(row, col);
-
                     //testuje czy arkusz nie zaczyna się od pustego rekordu, jeśli tak to pomija wczytywanie
                     if(cellType == CELLTYPE_BLANK && col == 1)
                         break;
                     switch (cellType)
                       {
-                                           case CELLTYPE_EMPTY:break;
-
+                                          case CELLTYPE_EMPTY:break;
                                           case CELLTYPE_NUMBER:
                                            {
                                                double d = sheet->readNum(row, col);
@@ -184,7 +178,7 @@ void zamGenerator::displaySqlQuery(int i)
         else
             ui->okButton->setVisible(true);
 
-        query->setQuery("SELECT * FROM `towary` WHERE kod = "+kod);
+        query->setQuery("SELECT * FROM `towary` WHERE kod = '"+kod+"'");
 
         ui->tableViewSQL->setModel(query);
         ui->tableViewSQL->setColumnWidth(0,30);
@@ -220,10 +214,6 @@ void zamGenerator::on_backButton_clicked()
             ui->backButton->setVisible(false);
         if(indexOrderList>=0)
             displaySqlQuery(indexOrderList);
-
-
-
-
 }
 
 void zamGenerator::on_tableViewSQL_clicked(const QModelIndex &index)
@@ -262,7 +252,6 @@ void zamGenerator::on_okButton_clicked()
         }else
             QMessageBox::information(this,"!!!!!!", "Zaznaczony rekord nie pokrywa się z szukaną pozycją");
     }
-
 }
 
 void zamGenerator::uploadToExcelOrder(QStringList sList)
@@ -276,7 +265,6 @@ void zamGenerator::uploadToExcelOrder(QStringList sList)
         }else{
             //book = xlCreateBook();
             book = xlCreateBookA();
-
         }
         QByteArray ba = excelFilePath.toUtf8();
         if(book->load(ba.data()))
@@ -304,7 +292,6 @@ void zamGenerator::uploadToExcelOrder(QStringList sList)
                 test = sList.at(9).toLocal8Bit();
                 sheet->writeStr(row,col+8,test.data());
 
-
                 book->save(ba.data());
         }
         book->release();
@@ -315,7 +302,6 @@ void zamGenerator::uploadToExcelOrder(QStringList sList)
 
 void zamGenerator::appendListFunction(QString &s, int a)
 {
-
     if(a == 1)
         listaDoZamowienia.append(s);
     else
@@ -330,12 +316,10 @@ void zamGenerator::on_updateSelectedIdList_clicked()
     ui->infoListWidget->clear();
     ui->infoListWidget->addItems(selectedIdList);
     }
-
 }
 //funkcja do zmiany kodowania znaków, gdy zaczytujemy polskie znaki z arkusza excel
 QString zamGenerator::textFile(const char *x)
 {
-
     QByteArray encodedString(x);
     QTextCodec *codec = QTextCodec::codecForName("Windows-1250");
     QString string = codec->toUnicode(encodedString);

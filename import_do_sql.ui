@@ -13,14 +13,42 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="zasoby.qrc">
+    <normaloff>:/new/prefix1/submittutorial3.png</normaloff>:/new/prefix1/submittutorial3.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+	background-color: rgb(255, 255, 255);
+    border: solid;
+	border-color: rgb(170, 0, 0);
+	border-width: 1px;
+}</string>
+  </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>390</y>
-     <width>341</width>
+     <width>371</width>
      <height>32</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: black;
+    padding: 1px 10px;
+    text-align:centre;
+    font-size: 10px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -44,9 +72,25 @@
     <rect>
      <x>10</x>
      <y>20</y>
-     <width>151</width>
+     <width>161</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: black;
+    padding: 3px 10px;
+    text-align: left;
+    font-size: 11px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Arkusz Excel z zamówieniem</string>
@@ -57,9 +101,25 @@
     <rect>
      <x>10</x>
      <y>60</y>
-     <width>151</width>
+     <width>161</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: black;
+    padding: 6px 15px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Start</string>
@@ -74,6 +134,22 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: black;
+    padding: 2px 15px;
+    text-align: left;
+    font-size: 11px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
+   </property>
    <property name="text">
     <string>Nadaj ID w zamówieniu</string>
    </property>
@@ -87,12 +163,30 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: black;
+    padding: 6px 15px;
+    text-align: left;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
+   </property>
    <property name="text">
     <string>Uaktualnij BD</string>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="zasoby.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

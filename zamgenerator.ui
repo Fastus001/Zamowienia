@@ -6,21 +6,50 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1300</width>
     <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="zasoby.qrc">
+    <normaloff>:/new/prefix1/submittutorial2.png</normaloff>:/new/prefix1/submittutorial2.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+	background-color: #2E2F30;
+    border: solid;
+	border-color: rgb(170, 0, 0);
+	border-width: 1px;
+}</string>
+  </property>
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>799</x>
-     <y>560</y>
-     <width>111</width>
-     <height>21</height>
+     <x>650</x>
+     <y>400</y>
+     <width>200</width>
+     <height>40</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+     color: rgb(71,225,12);
+    padding: 3px 5px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+font: bold;
+}
+</string>
    </property>
    <property name="text">
     <string>Dodaj do zamówienia</string>
@@ -29,11 +58,27 @@
   <widget class="QPushButton" name="stopButton">
    <property name="geometry">
     <rect>
-     <x>910</x>
-     <y>560</y>
+     <x>1210</x>
+     <y>550</y>
      <width>80</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+     color: rgb(71,225,12);
+    padding: 3px 5px;
+    text-align:centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Zakończ</string>
@@ -42,11 +87,27 @@
   <widget class="QPushButton" name="nextButton">
    <property name="geometry">
     <rect>
-     <x>720</x>
-     <y>560</y>
-     <width>80</width>
-     <height>21</height>
+     <x>530</x>
+     <y>400</y>
+     <width>120</width>
+     <height>40</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+     color: rgb(71,225,12);
+    padding: 6px 15px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Pomiń</string>
@@ -58,8 +119,13 @@
      <x>10</x>
      <y>320</y>
      <width>256</width>
-     <height>192</height>
+     <height>221</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QListWidget{
+     background-color: grey;
+}</string>
    </property>
   </widget>
   <widget class="QTableView" name="tableViewSQL">
@@ -67,19 +133,40 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>981</width>
+     <width>1281</width>
      <height>301</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QTableView{
+ background-color: grey;
+}</string>
    </property>
   </widget>
   <widget class="QPushButton" name="setExceFileToOrder">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>520</y>
+     <y>550</y>
      <width>251</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+    color: rgb(71,225,12);
+    padding: 6px 15px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Wybierz plik Excel z zamówieniem</string>
@@ -88,11 +175,27 @@
   <widget class="QPushButton" name="backButton">
    <property name="geometry">
     <rect>
-     <x>640</x>
-     <y>560</y>
-     <width>80</width>
-     <height>21</height>
+     <x>410</x>
+     <y>400</y>
+     <width>120</width>
+     <height>40</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+ color: rgb(71,225,12);
+    padding: 6px 15px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(229, 229, 229);
+border: solid;
+border-color: rgb(170, 0, 0);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Cofnij</string>
@@ -107,6 +210,12 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit{
+background-color: grey;
+border: none;
+}</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineCtnsOrder">
    <property name="geometry">
@@ -117,22 +226,46 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit{
+background-color: grey;
+border: none;
+}</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="updateSelectedIdList">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>530</x>
      <y>330</y>
-     <width>101</width>
+     <width>161</width>
      <height>51</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    border: none;
+     color: rgb(71,225,12);
+    padding: 6px 15px;
+    text-align: centre;
+    font-size: 15px;
+}
+QPushButton:hover{
+background-color: rgb(40, 40, 40);
+border: solid;
+border-color: rgb(40, 40, 40);
+border-width: 1px;
+}
+</string>
    </property>
    <property name="text">
     <string>Aktualizuj</string>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="zasoby.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>stopButton</sender>
